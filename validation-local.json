@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "domain": "pryma.cl",
+  "queried": true,
+  "checked_at": "2026-11-14T03:59:53+00:00",
+  "time_cl": "2026-11-14T00:59:53-03:00",
+  "execution_environment": "local",
+  "run_id": null,
+  "mode": "compare",
+  "results": [
+    {
+      "method": "http",
+      "source": "https://www.nic.cl/registry/Whois.do?d=pryma.cl",
+      "observed_at": "2026-11-14T03:59:53+00:00",
+      "http_status": 200,
+      "content_type": "text/html",
+      "bytes": 13866,
+      "sha256": "40bf983520d438c15cb3dac625536a1a4d36e435b794fcf45e302192b926ac5a",
+      "status": "en_eliminacion",
+      "reason": "explicit_deletion_or_restoration",
+      "elapsed_ms": 9733
+    },
+    {
+      "method": "whois",
+      "source": "whois.nic.cl:43",
+      "observed_at": "2026-11-14T03:59:53+00:00",
+      "status": "error_consulta",
+      "reason": "transport_or_decode_error",
+      "error_type": "gaierror",
+      "elapsed_ms": 0
+    }
+  ],
+  "status": "en_eliminacion",
+  "reason": "explicit_deletion_or_restoration",
+  "changed": true,
+  "pause": false
+}
