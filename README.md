@@ -5,23 +5,33 @@ claves, compras de dominios ni servicios contratados.
 
 ## Estado
 
-36 pruebas locales aprobadas. HTTP respondió 200 e indicó **en proceso de
-eliminación**. WHOIS directo falló por resolución DNS en el entorno local;
-esto no demuestra que falle desde GitHub. Evidencia: `validation-local.json`.
+**Validado desde GitHub Actions el 14 de noviembre de 2026, 01:22:40 de Chile.**
+HTTP y WHOIS directo coincidieron: `pryma.cl` está **en eliminación**, no disponible.
+Las 36 pruebas pasaron y el historial se guardó correctamente en GitHub.
+[Ejecución y registros](https://github.com/freyestech-png/pryma-domain-monitor/actions/runs/43556337485).
 
-**Validación en GitHub Actions pendiente. Vigilancia desactivada.**
-Esta sección se actualizará tras inspeccionar las ejecuciones reales.
+| Método | Resultado | Tiempo | Respuesta |
+|---|---|---:|---:|
+| HTTPS GET, URL exacta de NIC | HTTP 200, `en_eliminacion` | 634 ms | 13.866 bytes |
+| WHOIS directo, `whois.nic.cl:43` | `en_eliminacion` | 480 ms | 390 bytes |
+
+**Vigilancia habilitada mediante WHOIS directo**, más simple y sin dependencia
+del formato HTML. HTTP queda para diagnóstico manual. Estas mediciones corresponden
+a una ejecución, no constituyen una garantía de disponibilidad del servicio.
+El fallo DNS local previo (`validation-local.json`) no se reprodujo en Actions.
+El estado actual y su antigüedad se consultan en `state/latest.json`; esta sección
+documenta la validación inicial, no una cotización ni una reserva de dominio.
 
 ## Ejecutar
 
 ```bash
 python3 -m unittest -v test_monitor
 python3 monitor.py --mode compare
-python3 monitor.py --mode http
+python3 monitor.py --mode whois
 ```
 
 `compare` consulta una vez por HTTP y otra por WHOIS directo (`whois.nic.cl:43`).
-La vigilancia usará sólo el método validado. Una restricción explícita pausa
+La vigilancia usa sólo el método validado. Una restricción explícita pausa
 las consultas; no se cambia de transporte para eludirla.
 
 | Estado | Significado |
@@ -64,15 +74,21 @@ El workflow ejecuta pruebas, consulta y guarda el historial en commits de `main`
 Si guardar falla, el trabajo falla: revisar logs antes de activar recurrencia.
 Los commits del historial no disparan una nueva consulta por `push`.
 
-Cron preparado: `7,22,37,52 * * * *` (UTC), cada 15 minutos. Se activa sólo con
-variables de Actions `MONITOR_ENABLED=true` y `MONITOR_METHOD=http` o `whois`,
-después de validar el método desde Actions. La programación queda bloqueada
+Cron habilitado: `7,22,37,52 * * * *` (UTC), cada 15 minutos. Variables de
+Actions configuradas: `MONITOR_ENABLED=true` y `MONITOR_METHOD=whois`.
+Para detenerlo, cambiar `MONITOR_ENABLED` a `false` en Settings → Secrets and
+variables → Actions → Variables. Todas las ejecuciones quedan bloqueadas
 si el repositorio pasa a privado, para evitar costos no autorizados.
 
 GitHub puede retrasar u omitir ejecuciones y desactivar schedules públicos tras
 60 días sin actividad. La espera mínima puede omitir una ejecución que llegue
 demasiado pronto respecto de la anterior. No se garantiza un intervalo exacto.
 No ejecutar copias paralelas con estados independientes.
+
+No hay notificaciones de cambio por correo o Telegram: el resultado queda en
+GitHub. Un error de consulta nunca se presenta como disponibilidad. Ante una
+pausa por restricciones, revisar los logs y las condiciones de NIC antes de
+reanudar; no cambiar de método ni borrar el estado para eludir el bloqueo.
 
 ## Fuentes
 
