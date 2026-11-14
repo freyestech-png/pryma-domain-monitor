@@ -92,7 +92,8 @@ class GitHub:
         raise ValueError('Issue lookup limit reached; refusing possible duplicate')
 
     def create(self, title, body):
-        return self.request('/issues', {'title': title, 'body': body, 'assignees': [RECIPIENT]})
+        # A mention already delivers email; assignment produced a second email in the live test.
+        return self.request('/issues', {'title': title, 'body': body})
 
 
 def run(state_dir='state', client=None):

@@ -15,9 +15,11 @@ Las 36 pruebas pasaron y el historial se guardó correctamente en GitHub.
 | HTTPS GET, URL exacta de NIC | HTTP 200, `en_eliminacion` | 634 ms | 13.866 bytes |
 | WHOIS directo, `whois.nic.cl:43` | `en_eliminacion` | 480 ms | 390 bytes |
 
-**Vigilancia habilitada mediante WHOIS directo**, más simple y sin dependencia
-del formato HTML. HTTP queda para diagnóstico manual. Estas mediciones corresponden
-a una ejecución, no constituyen una garantía de disponibilidad del servicio.
+**Vigilancia habilitada mediante HTTP.** En la segunda comparación desde Actions
+(14 de noviembre, 01:46:56 de Chile), HTTP volvió a responder 200; WHOIS directo
+falló con `OSError` de transporte. Por eso se seleccionó HTTP como método principal.
+WHOIS queda para diagnóstico manual. Estas mediciones no constituyen una garantía
+de disponibilidad del servicio.
 El fallo DNS local previo (`validation-local.json`) no se reprodujo en Actions.
 El estado actual y su antigüedad se consultan en `state/latest.json`; esta sección
 documenta la validación inicial, no una cotización ni una reserva de dominio.
@@ -27,7 +29,7 @@ documenta la validación inicial, no una cotización ni una reserva de dominio.
 ```bash
 python3 -m unittest -v test_monitor test_notify
 python3 monitor.py --mode compare
-python3 monitor.py --mode whois
+python3 monitor.py --mode http
 ```
 
 `compare` consulta una vez por HTTP y otra por WHOIS directo (`whois.nic.cl:43`).
@@ -76,7 +78,7 @@ Si guardar falla, el trabajo falla: revisar logs antes de activar recurrencia.
 Los commits del historial no disparan una nueva consulta por `push`.
 
 Cron habilitado: `7,22,37,52 * * * *` (UTC), cada 15 minutos. Variables de
-Actions configuradas: `MONITOR_ENABLED=true` y `MONITOR_METHOD=whois`.
+Actions configuradas: `MONITOR_ENABLED=true` y `MONITOR_METHOD=http`.
 Para detenerlo, cambiar `MONITOR_ENABLED` a `false` en Settings → Secrets and
 variables → Actions → Variables. Todas las ejecuciones quedan bloqueadas
 si el repositorio pasa a privado, para evitar costos no autorizados.
@@ -92,16 +94,17 @@ reanudar; no cambiar de método ni borrar el estado para eludir el bloqueo.
 
 ## Avisos gratuitos
 
-**Estado: código preparado y 46 pruebas locales aprobadas; envío todavía NO activado.**
-La activación requiere autorizar que el workflow cree avisos públicos en este
-repositorio y use `issues: write`. La revisión automática detuvo ese cambio;
-el workflow activo conserva la vigilancia sin envío. No se ha enviado la prueba.
+**Avisos activados y entrega de correo verificada el 14 de noviembre de 2026,
+01:47 de Chile.** Las 46 pruebas pasaron también en
+[GitHub Actions](https://github.com/freyestech-png/pryma-domain-monitor/actions/runs/43558325542).
+La [prueba de aviso](https://github.com/freyestech-png/pryma-domain-monitor/issues/1)
+llegó al buzón del propietario. No anunció disponibilidad: el estado era en eliminación.
 
 `notify.py` crea una incidencia de GitHub por cada cambio de estado y menciona
-y asigna al propietario `freyestech-png`. GitHub envía el contenido por correo
-si están habilitadas las notificaciones de participación, menciones y asignaciones.
+al propietario `freyestech-png`. GitHub envía el contenido por correo
+si están habilitadas las notificaciones de participación y menciones.
 El correo de destino se administra en las preferencias privadas de GitHub;
-no se guarda ni se publica en este repositorio. GitHub Mobile permite añadir
+no se incluye en los archivos ni en los avisos del monitor. GitHub Mobile permite añadir
 avisos push para menciones y asignaciones en el teléfono.
 
 - Al instalarlo, se envía una **PRUEBA DE AVISO** con el estado real observado.
@@ -111,7 +114,9 @@ avisos push para menciones y asignaciones en el teléfono.
 - Un envío fallido queda pendiente. Se busca una marca única en GitHub antes de repetirlo para evitar duplicados, incluso si se pierde la respuesta tras crear la incidencia.
 - Se procesan las transiciones pendientes del historial, incluida una disponibilidad breve seguida de otro estado; verificar siempre la hora del aviso.
 - Usa sólo el token temporal incorporado en Actions (`issues: write`). No hay claves de correo, servidores SMTP ni servicios contratados.
-- 46 pruebas locales aprobadas: 36 del monitor y 10 sobre alertas, fallos, duplicados y transiciones.
+- 46 pruebas aprobadas localmente y en Actions: 36 del monitor y 10 sobre alertas, fallos, duplicados y transiciones.
+- La prueba inicial generó dos correos (mención y asignación); se eliminó la asignación automática para evitar ese aviso adicional.
+- Una prueba adicional usa una respuesta HTTP real de un dominio de control no registrado. Verifica el formato de disponibilidad y rechaza atribuir el resultado de otro dominio a `pryma.cl` (47 pruebas en total). No fue una observación de disponibilidad de `pryma.cl`.
 
 Crear la incidencia confirma la entrega a GitHub, no la llegada al buzón.
 Revisar la prueba de correo (incluido spam) para validar la entrega final.

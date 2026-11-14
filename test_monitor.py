@@ -25,6 +25,12 @@ class ClassificationTests(unittest.TestCase):
         raw = (Path(__file__).parent / 'fixture-deletion.html').read_text()
         self.assertStatus(raw, 'en_eliminacion')
 
+    def test_real_unregistered_control_fixture(self):
+        raw = (Path(__file__).parent / 'fixture-available.html').read_text()
+        # Actual negative response is tied to a control domain, never a live pryma.cl signal.
+        self.assertStatus(raw, 'error_consulta')
+        self.assertStatus(raw.replace('pryma-monitor-control-20261114.cl', 'pryma.cl'), 'disponible')
+
     def test_restoration(self):
         self.assertStatus(table('Se puede restaurar hasta 2026-11-12'), 'en_eliminacion')
 
