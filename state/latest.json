@@ -2,32 +2,33 @@
   "schema_version": 1,
   "domain": "pryma.cl",
   "queried": true,
-  "checked_at": "2026-11-14T04:46:56+00:00",
-  "time_cl": "2026-11-14T01:46:56-03:00",
+  "checked_at": "2026-11-14T05:02:08+00:00",
+  "time_cl": "2026-11-14T02:02:08-03:00",
   "execution_environment": "github_actions",
-  "run_id": "43558325542",
+  "run_id": "43559516194",
   "mode": "compare",
   "results": [
     {
       "method": "http",
       "source": "https://www.nic.cl/registry/Whois.do?d=pryma.cl",
-      "observed_at": "2026-11-14T04:46:56+00:00",
+      "observed_at": "2026-11-14T05:02:08+00:00",
       "http_status": 200,
       "content_type": "text/html",
       "bytes": 13866,
-      "sha256": "cd874131880c818b5bb39caa98f8c8f96eb6d56af23a608042ce965b57fff470",
+      "sha256": "7fda8c6158eea408a35e3ebaacd2eee47e068efc54c17c9ff5fad13c33884e6d",
       "status": "en_eliminacion",
       "reason": "explicit_deletion_or_restoration",
-      "elapsed_ms": 569
+      "elapsed_ms": 662
     },
     {
       "method": "whois",
       "source": "whois.nic.cl:43",
-      "observed_at": "2026-11-14T04:46:56+00:00",
-      "status": "error_consulta",
-      "reason": "transport_or_decode_error",
-      "error_type": "OSError",
-      "elapsed_ms": 225
+      "observed_at": "2026-11-14T05:02:08+00:00",
+      "bytes": 390,
+      "sha256": "4a955a2e79dbe7b6c76c00ef3e23f6a739b7c0c29fed3965ce15c91cae200fb1",
+      "status": "en_eliminacion",
+      "reason": "explicit_deletion_or_restoration",
+      "elapsed_ms": 427
     }
   ],
   "status": "en_eliminacion",
