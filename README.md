@@ -25,7 +25,7 @@ documenta la validación inicial, no una cotización ni una reserva de dominio.
 ## Ejecutar
 
 ```bash
-python3 -m unittest -v test_monitor
+python3 -m unittest -v test_monitor test_notify
 python3 monitor.py --mode compare
 python3 monitor.py --mode whois
 ```
@@ -57,7 +57,8 @@ fecha de vencimiento. Un resultado vacío nunca significa disponible.
 - Errores: espera de 30, 60, 120 minutos, etc., hasta 24 horas. Un `Retry-After` mayor prevalece.
 - HTTP 401/403/429 o desafío explícito: pausa persistente para revisión manual.
 - Estado corrupto: se detiene antes de consultar. No se borra el historial.
-- Sin reintentos de NIC dentro del mismo trabajo ni avisos por email/Telegram.
+- Sin reintentos de NIC dentro del mismo trabajo.
+- `state/notifications.json`: cursor de avisos enviados, sin correos ni credenciales.
 
 La política de NIC revisada no establece una cuota numérica. Cuatro consultas
 por hora es una propuesta conservadora, no un límite oficialmente garantizado.
@@ -85,10 +86,32 @@ GitHub puede retrasar u omitir ejecuciones y desactivar schedules públicos tras
 demasiado pronto respecto de la anterior. No se garantiza un intervalo exacto.
 No ejecutar copias paralelas con estados independientes.
 
-No hay notificaciones de cambio por correo o Telegram: el resultado queda en
-GitHub. Un error de consulta nunca se presenta como disponibilidad. Ante una
+Un error de consulta nunca se presenta como disponibilidad. Ante una
 pausa por restricciones, revisar los logs y las condiciones de NIC antes de
 reanudar; no cambiar de método ni borrar el estado para eludir el bloqueo.
+
+## Avisos gratuitos
+
+`notify.py` crea una incidencia de GitHub por cada cambio de estado y menciona
+y asigna al propietario `freyestech-png`. GitHub envía el contenido por correo
+si están habilitadas las notificaciones de participación, menciones y asignaciones.
+El correo de destino se administra en las preferencias privadas de GitHub;
+no se guarda ni se publica en este repositorio. GitHub Mobile permite añadir
+avisos push para menciones y asignaciones en el teléfono.
+
+- Al instalarlo, se envía una **PRUEBA DE AVISO** con el estado real observado.
+- Si NIC indica disponibilidad, el asunto será **PRYMA.CL DISPONIBLE — revisar e inscribir en NIC Chile**.
+- El aviso incluye estado anterior/nuevo, hora de Chile, consulta completa del monitor y enlaces a NIC y al registro de ejecución.
+- Las consultas sin cambios no generan correo. Los errores y su recuperación se distinguen de la disponibilidad.
+- Un envío fallido queda pendiente. Se busca una marca única en GitHub antes de repetirlo para evitar duplicados, incluso si se pierde la respuesta tras crear la incidencia.
+- Se procesan las transiciones pendientes del historial, incluida una disponibilidad breve seguida de otro estado; verificar siempre la hora del aviso.
+- Usa sólo el token temporal incorporado en Actions (`issues: write`). No hay claves de correo, servidores SMTP ni servicios contratados.
+- 46 pruebas locales aprobadas: 36 del monitor y 10 sobre alertas, fallos, duplicados y transiciones.
+
+Crear la incidencia confirma la entrega a GitHub, no la llegada al buzón.
+Revisar la prueba de correo (incluido spam) para validar la entrega final.
+El objetivo es avisar al detectar disponibilidad; la programación, NIC y la
+entrega de correo pueden retrasarse. No se reserva ni se compra el dominio.
 
 ## Fuentes
 
@@ -97,3 +120,4 @@ reanudar; no cambiar de método ni borrar el estado para eludir el bloqueo.
 - [Política de publicación NIC](https://www.nic.cl/normativa/politica-publicacion-de-datos-cl.pdf)
 - [GitHub: facturación](https://docs.github.com/en/actions/concepts/billing-and-usage)
 - [GitHub: schedule](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+- [GitHub: configurar correo y avisos móviles](https://docs.github.com/es/subscriptions-and-notifications/get-started/configuring-notifications)
