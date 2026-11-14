@@ -92,6 +92,11 @@ reanudar; no cambiar de método ni borrar el estado para eludir el bloqueo.
 
 ## Avisos gratuitos
 
+**Estado: código preparado y 46 pruebas locales aprobadas; envío todavía NO activado.**
+La activación requiere autorizar que el workflow cree avisos públicos en este
+repositorio y use `issues: write`. La revisión automática detuvo ese cambio;
+el workflow activo conserva la vigilancia sin envío. No se ha enviado la prueba.
+
 `notify.py` crea una incidencia de GitHub por cada cambio de estado y menciona
 y asigna al propietario `freyestech-png`. GitHub envía el contenido por correo
 si están habilitadas las notificaciones de participación, menciones y asignaciones.
