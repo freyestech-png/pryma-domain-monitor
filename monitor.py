@@ -80,13 +80,16 @@ def verdict(status, reason, **extra):
     return {'status': status, 'reason': reason, **extra}
 
 
-def classify(raw, method):
+def classify(raw, method, domain=DOMAIN):
+    if domain not in (DOMAIN, 'prymax.cl'):
+        raise ValueError('Only the monitored domain and authorized control are supported')
+    domain_pattern = re.escape(domain)
     if method == 'http':
         page = Page()
         page.feed(raw)
         visible = normalized(' '.join(page.text))
         tables = [normalized(t) for t in page.tables]
-        candidates = [t for t in tables if re.search(r'(?<![\w.-])pryma\.cl(?![\w.-])', t)]
+        candidates = [t for t in tables if re.search(r'(?<![\w.-])' + domain_pattern + r'(?![\w.-])', t)]
         # One domain-specific table is mandatory. A query box or footer is not evidence.
         evidence = candidates[0] if len(candidates) == 1 else ''
     else:
@@ -103,7 +106,7 @@ def classify(raw, method):
         return verdict('error_consulta', 'missing_or_ambiguous_domain_result')
     if method == 'whois':
         names = re.findall(r'^\s*Domain name:\s*(\S+)\s*$', raw, flags=re.M | re.I)
-        if names and (len(names) != 1 or names[0].casefold() != DOMAIN):
+        if names and (len(names) != 1 or names[0].casefold() != domain):
             return verdict('error_consulta', 'domain_mismatch')
         bound = bool(names)
     else:
@@ -112,12 +115,12 @@ def classify(raw, method):
                               r'se puede restaurar hasta|pending\s*delete|redemption\s*period|'
                               r'status:\s*(?:pendingdelete|redemptionperiod)', evidence)))
     available = bool(re.search(r'nombre de dominio no existe|este dominio no esta registrado|'
-                               r'(?:el )?dominio pryma\.cl no (?:esta registrado|existe)|'
-                               r'pryma\.cl\s+(?:esta )?disponible', evidence))
+                               r'(?:el )?dominio ' + domain_pattern + r' no (?:esta registrado|existe)|'
+                               + domain_pattern + r'\s+(?:esta )?disponible', evidence))
     # Strict WHOIS negative: bind the explicit "no entries" message to this domain.
     if method == 'whois':
-        available = bool(re.search(r'(?:^|\n)\s*(?:%+\s*)?(?:pryma\.cl:\s*no entries found\.?|'
-                                   r'no entries found for\s+[\"\x27]?pryma\.cl[\"\x27]?\.?)\s*(?:\n|$)', raw, re.I))
+        available = bool(re.search(r'(?:^|\n)\s*(?:%+\s*)?(?:' + domain_pattern + r':\s*no entries found\.?|'
+                                   r'no entries found for\s+[\"\x27]?' + domain_pattern + r'[\"\x27]?\.?)\s*(?:\n|$)', raw, re.I))
     registered = (bound and (('registrar name:' in evidence and 'creation date:' in evidence)
                              if method == 'whois' else
                              ('titular' in evidence and ('agente registrador' in evidence or 'fecha de expiracion' in evidence))))

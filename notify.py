@@ -21,11 +21,15 @@ def record_key(record):
 
 
 def message(record, previous, initial=False):
+    domain = record['domain']
+    if domain not in (DOMAIN, 'prymax.cl'):
+        raise ValueError('Unexpected notification domain')
+    query_url = 'https://www.nic.cl/registry/Whois.do?d=' + domain
     status = record['status']
     key = record_key(record)
     if status == 'disponible':
-        title = 'PRYMA.CL DISPONIBLE — revisar e inscribir en NIC Chile'
-        lead = ('NIC Chile indicó explícitamente que **pryma.cl no está registrado**. '
+        title = domain.upper() + ' DISPONIBLE — revisar e inscribir en NIC Chile'
+        lead = (f'NIC Chile indicó explícitamente que **{domain} no está registrado**. '
                 'Revisa la consulta y, si sigue disponible, inscríbelo ahora en NIC Chile. '
                 'Este aviso no reserva el dominio ni garantiza que siga libre al abrirlo.')
     elif initial:
@@ -43,14 +47,14 @@ def message(record, previous, initial=False):
     run_id = str(record.get('run_id') or '')
     run_link = f'https://github.com/{REPO}/actions/runs/{run_id}' if run_id.isdigit() else f'https://github.com/{REPO}/actions'
     body = (f'@{RECIPIENT}\n\n{lead}\n\n'
-            f'- Dominio: **{DOMAIN}**\n'
+            f'- Dominio: **{domain}**\n'
             f'- Estado anterior: **{LABELS.get(previous, "Inicio de vigilancia")}**\n'
             f'- Estado detectado: **{LABELS[status]}**\n'
             f'- Fecha y hora de Chile: **{record.get("time_cl", record["checked_at"])}**\n'
             f'- Consulta UTC: {record["checked_at"]}\n'
             f'- Método: {record.get("mode", "no informado")}\n'
             f'- Pausado por restricción: {"sí" if record.get("pause") else "no"}\n\n'
-            f'[Consultar pryma.cl en NIC]({URL}) · [Inscribir en NIC Chile](https://www.nic.cl/) · '
+            f'[Consultar {domain} en NIC]({query_url}) · [Inscribir en NIC Chile](https://www.nic.cl/) · '
             f'[Ejecución y registros]({run_link})\n\n'
             'Resultado completo del monitor (sin datos personales del titular):\n\n'
             '```json\n' + json.dumps(record, ensure_ascii=False, indent=2) + '\n```\n\n'

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "domain": "prymax.cl",
+  "queried": true,
+  "checked_at": "2026-11-14T04:57:43+00:00",
+  "time_cl": "2026-11-14T01:57:43-03:00",
+  "execution_environment": "local_live_http",
+  "mode": "http",
+  "results": [
+    {
+      "method": "http",
+      "source": "https://www.nic.cl/registry/Whois.do?d=prymax.cl",
+      "http_status": 200,
+      "bytes": 11960,
+      "sha256": "9f3a7b37231e36cb9ebd8eb76b71e4f6be93533359ffced487ac144c0cf6e2d5",
+      "nic_message": "Nombre de dominio no existe. Inscribir \"prymax.cl\" Ver Tarifas Fecha Actual: 2026-11-14 01:57:43 CLST",
+      "status": "disponible",
+      "reason": "explicit_not_registered_confirm_manually"
+    }
+  ],
+  "status": "disponible",
+  "reason": "explicit_not_registered_confirm_manually",
+  "test_only": true,
+  "pause": false
+}

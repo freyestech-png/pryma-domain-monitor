@@ -74,6 +74,22 @@ class NotificationTests(unittest.TestCase):
         self.append('disponible'); self.runAlert()
         self.assertIn('PRYMA.CL DISPONIBLE', self.client.issues[0]['title'])
 
+    def test_prymax_control_uses_same_template_without_pryma_claim(self):
+        import control_prymax
+        record, title, body = control_prymax.verify()
+        self.assertEqual(record['domain'], 'prymax.cl')
+        self.assertTrue(title.startswith('[PRUEBA PRYMAX.CL] PRYMAX.CL DISPONIBLE'))
+        self.assertIn('no de PRYMA.CL', body)
+        self.assertIn('Whois.do?d=prymax.cl', body)
+        self.assertNotIn('**pryma.cl no está registrado**', body)
+
+    def test_production_history_refuses_control_domain(self):
+        record = self.append('disponible')
+        record['domain'] = 'prymax.cl'
+        self.history.write_text(json.dumps(record) + '\n')
+        with self.assertRaises(ValueError): self.runAlert()
+        self.assertEqual(self.client.issues, [])
+
     def test_error_is_not_availability_and_recovery_is_reported(self):
         self.append(); self.runAlert()
         self.append('error_consulta'); self.runAlert()

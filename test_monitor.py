@@ -31,6 +31,16 @@ class ClassificationTests(unittest.TestCase):
         self.assertStatus(raw, 'error_consulta')
         self.assertStatus(raw.replace('pryma-monitor-control-20261114.cl', 'pryma.cl'), 'disponible')
 
+    def test_prymax_real_response_is_available_only_for_prymax(self):
+        raw = (Path(__file__).parent / 'fixture-prymax.html').read_text()
+        self.assertEqual(m.classify(raw, 'http', 'prymax.cl')['status'], 'disponible')
+        self.assertStatus(raw, 'error_consulta')
+
+    def test_prymax_whois_does_not_match_pryma(self):
+        raw = 'prymax.cl: no entries found.'
+        self.assertEqual(m.classify(raw, 'whois', 'prymax.cl')['status'], 'disponible')
+        self.assertStatus(raw, 'error_consulta', 'whois')
+
     def test_restoration(self):
         self.assertStatus(table('Se puede restaurar hasta 2026-11-12'), 'en_eliminacion')
 
