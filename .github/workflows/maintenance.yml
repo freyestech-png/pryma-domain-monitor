@@ -1,0 +1,33 @@
+name: PRYMA - limpieza autorizada y prueba PRYMAX
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: pryma-domain-monitor
+  cancel-in-progress: false
+
+jobs:
+  maintenance:
+    if: github.ref_name == 'main' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Probar detección y avisos sin red
+        run: python3 -m unittest -v test_monitor test_notify
+      - name: Retirar correo de siete commits sin modificar archivos
+        env:
+          PRIVACY_REWRITE_AUTHORIZED: 'true'
+        run: python3 privacy_cleanup.py --apply
+      - name: Comprobar PRYMAX y enviar prueba etiquetada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 control_prymax.py
