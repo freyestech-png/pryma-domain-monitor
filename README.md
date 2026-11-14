@@ -123,6 +123,29 @@ Revisar la prueba de correo (incluido spam) para validar la entrega final.
 El objetivo es avisar al detectar disponibilidad; la programación, NIC y la
 entrega de correo pueden retrasarse. No se reserva ni se compra el dominio.
 
+## Prueba específica PRYMAX.CL y privacidad
+
+El 14 de noviembre de 2026 a las 01:57:43 de Chile, la consulta HTTP real a
+`https://www.nic.cl/registry/Whois.do?d=prymax.cl` respondió 200 y mostró:
+**«Nombre de dominio no existe. Inscribir \"prymax.cl\"»**.
+El clasificador reconoció `disponible` para `prymax.cl` y rechazó atribuir esa
+misma respuesta a `pryma.cl`. Evidencia: `validation-prymax.json` y la tabla
+sanitizada `fixture-prymax.html`.
+
+La [ejecución de validación](https://github.com/freyestech-png/pryma-domain-monitor/actions/runs/43559697118)
+aprobó **51 pruebas**, reprodujo esa respuesta real sin una consulta adicional
+a NIC y envió el [correo de control PRYMAX.CL](https://github.com/freyestech-png/pryma-domain-monitor/issues/2).
+Su recepción se verificó en el buzón. Usa la misma función de mensaje que el
+aviso futuro de PRYMA.CL, con el dominio de control y un prefijo explícito de prueba.
+La vigilancia y su historial siguen dedicados exclusivamente a `pryma.cl`.
+
+En esa misma ejecución se corrigió la autoría de siete commits antiguos usando
+el alias `noreply`. Se verificaron los 14 commits existentes y se conservaron
+todos sus árboles de archivos. La rama publicada quedó sin correos personales
+en los campos de autor/committer. Esta limpieza no garantiza borrar copias
+externas ni vistas antiguas de GitHub accesibles por un SHA previo.
+El mantenimiento es manual y comparte la exclusión de ejecución con el monitor.
+
 ## Fuentes
 
 - [Consulta exacta NIC](https://www.nic.cl/registry/Whois.do?d=pryma.cl)
