@@ -1,0 +1,81 @@
+name: PRYMA Domain Monitor
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'compare: diagnóstico; http/whois: un solo método'
+        type: choice
+        options: [compare, http, whois]
+        default: compare
+  push:
+    branches: [main]
+    paths: ['monitor.py', 'test_monitor.py', 'fixture-deletion.html', '.github/workflows/monitor.yml']
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pryma-domain-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    # Enable scheduled runs only AFTER reviewing a successful Actions comparison.
+    if: >-
+      github.ref_name == github.event.repository.default_branch &&
+      (github.event_name != 'schedule' ||
+      (vars.MONITOR_ENABLED == 'true' && github.event.repository.private == false &&
+      (vars.MONITOR_METHOD == 'http' || vars.MONITOR_METHOD == 'whois')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+      - name: Ejecutar pruebas sin red
+        run: python3 -m unittest -v test_monitor
+      - name: Consulta real a NIC Chile
+        id: query
+        continue-on-error: true
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_MODE: ${{ inputs.mode }}
+          SCHEDULE_MODE: ${{ vars.MONITOR_METHOD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mode=compare
+          if [[ "$EVENT" == schedule ]]; then mode="$SCHEDULE_MODE"; fi
+          if [[ "$EVENT" == workflow_dispatch ]]; then mode="$INPUT_MODE"; fi
+          python3 monitor.py --mode "$mode"
+      - name: Guardar historial y límites incluso si la consulta falla
+        if: always() && steps.query.outcome != 'skipped'
+        env:
+          BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f state/control.json ]]; then
+            echo 'No se creó estado persistente; revisar el paso de consulta.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f state/control.json state/latest.json state/history/
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: registrar consulta NIC Chile'
+            # Only persistence is retried. NIC is never queried again in this job.
+            for attempt in 1 2 3; do
+              git pull --rebase origin "$BRANCH"
+              if git push origin "HEAD:$BRANCH"; then exit 0; fi
+            done
+            echo 'Falló persistencia: historial sólo en logs de esta ejecución.'
+            exit 1
+          fi
+      - name: Señalar error de consulta
+        if: always() && steps.query.outcome == 'failure'
+        run: exit 1
