@@ -2,23 +2,23 @@
   "schema_version": 1,
   "domain": "pryma.cl",
   "queried": true,
-  "checked_at": "2026-11-14T21:37:58+00:00",
-  "time_cl": "2026-11-14T18:37:58-03:00",
+  "checked_at": "2026-11-15T01:21:48+00:00",
+  "time_cl": "2026-11-14T22:21:48-03:00",
   "execution_environment": "github_actions",
-  "run_id": "43643833013",
+  "run_id": "43662723860",
   "mode": "http",
   "results": [
     {
       "method": "http",
       "source": "https://www.nic.cl/registry/Whois.do?d=pryma.cl",
-      "observed_at": "2026-11-14T21:37:58+00:00",
+      "observed_at": "2026-11-15T01:21:48+00:00",
       "http_status": 200,
       "content_type": "text/html",
       "bytes": 13866,
-      "sha256": "1eb492927dc0eea569a7cb7aebdea8c65e7a012a81ce083492d2de57fff45a4b",
+      "sha256": "5028bab542777b090b61ff38ea2f5ecd3f904272c47b430450da26725ae77321",
       "status": "en_eliminacion",
       "reason": "explicit_deletion_or_restoration",
-      "elapsed_ms": 1055
+      "elapsed_ms": 732
     }
   ],
   "status": "en_eliminacion",

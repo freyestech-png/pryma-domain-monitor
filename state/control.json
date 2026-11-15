@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "domain": "pryma.cl",
-  "last_attempt_at": "2026-11-14T21:37:58.126905+00:00",
-  "next_allowed_at": "2026-11-14T21:52:58.126905+00:00",
+  "last_attempt_at": "2026-11-15T01:21:48.512644+00:00",
+  "next_allowed_at": "2026-11-15T01:36:48.512644+00:00",
   "consecutive_errors": 0,
   "paused": false,
   "last_status": "en_eliminacion",
   "last_good_status": "en_eliminacion",
-  "last_good_at": "2026-11-14T21:37:58.126905+00:00"
+  "last_good_at": "2026-11-15T01:21:48.512644+00:00"
 }
